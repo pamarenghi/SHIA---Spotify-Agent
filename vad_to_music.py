@@ -8,6 +8,10 @@ output_prompt = {
     'dominance': 6.5
 }
 
+
+dict = {}
+k = 5
+
 path = "Data/main_dataset.csv"
 df_main = pd.read_csv(path)
 
@@ -39,10 +43,15 @@ def compute_similarity(row, prompt, metric='euclidean'):
         raise ValueError("Métrique non supportée, choisissez 'euclidean' ou 'cosine'.")
 
 # Appliquer la fonction pour calculer la similarité
-df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="euclidian"), axis=1)
+df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="euclidean"), axis=1)
 
 # Trier par similarité croissante et sélectionner les 5 musiques les plus proches
-df_sorted = df_main.sort_values(by='similarity').head(5)
+df_sorted = df_main.sort_values(by='similarity').head(k)
+
+for i in range(k):
+    for seed in df_sorted.head(k)['seeds'].values[i]:
+        dict[seed] = 1 + dict.get(seed, 0)
 
 # Afficher les résultats
 print(df_sorted[['artist', 'song', 'similarity']])
+print(dict)
