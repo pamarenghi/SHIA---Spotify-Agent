@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import ast
 
 output_prompt = {
     'valence': 4.5,
@@ -9,6 +10,8 @@ output_prompt = {
 
 path = "Data/main_dataset.csv"
 df_main = pd.read_csv(path)
+
+df_main['seeds'] = df_main['seeds'].apply(ast.literal_eval)
 
 column_renaming = {'valence_tags': 'valence', 'arousal_tags': 'arousal', 'dominance_tags': 'dominance'}
 df_main = df_main.rename(columns=column_renaming)
