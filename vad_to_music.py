@@ -16,7 +16,6 @@ df_main = df_main.rename(columns=column_renaming)
 # Fonction pour calculer la distance euclidienne
 def compute_similarity(row, prompt, metric='euclidean'):
     if metric == 'euclidean':
-        # Calcul de la distance euclidienne
         return np.sqrt((row['valence'] - prompt['valence'])**2 + 
                        (row['arousal'] - prompt['arousal'])**2 + 
                        (row['dominance'] - prompt['dominance'])**2)
@@ -37,7 +36,7 @@ def compute_similarity(row, prompt, metric='euclidean'):
         raise ValueError("Métrique non supportée, choisissez 'euclidean' ou 'cosine'.")
 
 # Appliquer la fonction pour calculer la similarité
-df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="cosine"), axis=1)
+df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="euclidian"), axis=1)
 
 # Trier par similarité croissante et sélectionner les 5 musiques les plus proches
 df_sorted = df_main.sort_values(by='similarity').head(5)
