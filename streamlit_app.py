@@ -25,6 +25,16 @@ temperature = st.sidebar.slider(
     help="Plus la température est élevée, plus la réponse sera créative et variée."
 )
 
+# Curseur pour top p
+top_p = st.sidebar.slider(
+    label="Top-p (nucleus sampling)",
+    min_value=0.0,
+    max_value=1.0,
+    value=1.0,
+    step=0.05,
+    help="Plus top-p est bas, plus la sortie sera conservatrice (exclut les tokens peu probables)."
+)
+
 # Initialiser l'historique de la conversation dans la session
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -69,7 +79,7 @@ if len (st.session_state.messages) == 0:
         tools=[],
         temperature=temperature,
         max_output_tokens=615,
-        top_p=1,
+        top_p=top_p,
         store=True
     )
 
