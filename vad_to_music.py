@@ -2,20 +2,17 @@ import pandas as pd
 import numpy as np
 import ast
 import json
-
+import random
 
 output_prompt = {
-    'valence': 4.5,
-    'arousal': 3.0,
-    'dominance': 6.5
+    'valence': 1.5,
+    'arousal': 1.0,
+    'dominance': 1.5
 }
 
-def vad_to_music(output_prompt_path):
-    with open(output_prompt_path, 'r', encoding='utf-8') as f:
-        output_prompt = json.load(f)
-    print(output_prompt)
+def vad_to_music(output_prompt):
     dict = {}
-    k = 5
+    k = 1000
 
     path = "Data/muse_v3.csv"
     df_main = pd.read_csv(path)
@@ -26,7 +23,7 @@ def vad_to_music(output_prompt_path):
     df_main = df_main.rename(columns=column_renaming)
 
     # Fonction pour calculer la distance euclidienne
-    def compute_similarity(row, prompt, metric='euclidean'):
+    def compute_similarity(row, prompt, metric='cosine'):
         if metric == 'euclidean':
             return np.sqrt((row['valence'] - prompt['valence'])**2 + 
                         (row['arousal'] - prompt['arousal'])**2 + 
@@ -52,20 +49,16 @@ def vad_to_music(output_prompt_path):
 
     # Trier par similarité croissante et sélectionner les 5 musiques les plus proches
     df_sorted = df_main.sort_values(by='similarity', ascending=False).head(k)
-
-    for i in range(k):
-        for seed in df_sorted.head(k)['seeds'].values[i]:
-            dict[seed] = 1 + dict.get(seed, 0)
-
     df_sorted = df_sorted.dropna(subset=['spotify_id'])
-
+    counter = random.randint(0,50)
     # Afficher les résultats
     # print(df_sorted[['artist', 'similarity', 'spotify_id', 'track']])
     # print("ID Spotify du premier trouvé :", df_sorted.iloc[0]['spotify_id'])
-    link = 'https://open.spotify.com/intl-fr/track/' + str(df_sorted.iloc[0]['spotify_id'])
+    print(df_sorted.head(10))
+    link = 'https://open.spotify.com/intl-fr/track/' + str(df_sorted.iloc[counter]['spotify_id'])
     # print(link)
     # print(dict)
     return link
 
-link = vad_to_music('vad_data.json')
+link = vad_to_music(output_prompt)
 print(link)

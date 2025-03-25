@@ -133,11 +133,7 @@ if st.session_state.vad_data:
 
     try:
         vad_dict = json.loads(json_str)
-
-        with open("vad_data.json", "w") as f:
-            json.dump(vad_dict, f, indent=4)
-        st.markdown("JSON successfuly optained!")
-        link = vad_to_music('vad_data.json')
+        link = vad_to_music(vad_dict)
         st.markdown("Music successfully found!")
         st.write(link)
 
