@@ -2,6 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import re
 import json
+from vad_to_music import vad_to_music
 
 # Configuration de l'API OpenAI (remplace "your_api_key_here" par ta clé)
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -136,7 +137,9 @@ if st.session_state.vad_data:
         with open("vad_data.json", "w") as f:
             json.dump(vad_dict, f, indent=4)
         st.markdown("JSON successfuly optained!")
-        st.write(vad_dict)
+        link = vad_to_music('vad_data.json')
+        st.markdown("Music successfully found!")
+        st.write(link)
 
     except json.JSONDecodeError as e:
         st.error("Error with JSON conversion : " + str(e))

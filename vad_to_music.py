@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import ast
+import json
+
 
 output_prompt = {
     'valence': 4.5,
@@ -8,50 +10,62 @@ output_prompt = {
     'dominance': 6.5
 }
 
+def vad_to_music(output_prompt_path):
+    with open(output_prompt_path, 'r', encoding='utf-8') as f:
+        output_prompt = json.load(f)
+    print(output_prompt)
+    dict = {}
+    k = 5
 
-dict = {}
-k = 5
+    path = "Data/muse_v3.csv"
+    df_main = pd.read_csv(path)
 
-path = "Data/main_dataset.csv"
-df_main = pd.read_csv(path)
+    df_main['seeds'] = df_main['seeds'].apply(ast.literal_eval)
 
-df_main['seeds'] = df_main['seeds'].apply(ast.literal_eval)
+    column_renaming = {'valence_tags': 'valence', 'arousal_tags': 'arousal', 'dominance_tags': 'dominance'}
+    df_main = df_main.rename(columns=column_renaming)
 
-column_renaming = {'valence_tags': 'valence', 'arousal_tags': 'arousal', 'dominance_tags': 'dominance'}
-df_main = df_main.rename(columns=column_renaming)
-
-# Fonction pour calculer la distance euclidienne
-def compute_similarity(row, prompt, metric='euclidean'):
-    if metric == 'euclidean':
-        return np.sqrt((row['valence'] - prompt['valence'])**2 + 
-                       (row['arousal'] - prompt['arousal'])**2 + 
-                       (row['dominance'] - prompt['dominance'])**2)
-    
-    elif metric == 'cosine':
-        vector1 = np.array([row['valence'], row['arousal'], row['dominance']])
-        vector2 = np.array([prompt['valence'], prompt['arousal'], prompt['dominance']])
+    # Fonction pour calculer la distance euclidienne
+    def compute_similarity(row, prompt, metric='euclidean'):
+        if metric == 'euclidean':
+            return np.sqrt((row['valence'] - prompt['valence'])**2 + 
+                        (row['arousal'] - prompt['arousal'])**2 + 
+                        (row['dominance'] - prompt['dominance'])**2)
         
-        dot_product = np.dot(vector1, vector2)
-        norm1 = np.linalg.norm(vector1)
-        norm2 = np.linalg.norm(vector2)
-        
-        if norm1 == 0 or norm2 == 0:
-            return 0
-        return dot_product / (norm1 * norm2)
+        elif metric == 'cosine':
+            vector1 = np.array([row['valence'], row['arousal'], row['dominance']])
+            vector2 = np.array([prompt['valence'], prompt['arousal'], prompt['dominance']])
+            
+            dot_product = np.dot(vector1, vector2)
+            norm1 = np.linalg.norm(vector1)
+            norm2 = np.linalg.norm(vector2)
+            
+            if norm1 == 0 or norm2 == 0:
+                return 0
+            return dot_product / (norm1 * norm2)
 
-    else:
-        raise ValueError("Métrique non supportée, choisissez 'euclidean' ou 'cosine'.")
+        else:
+            raise ValueError("Métrique non supportée, choisissez 'euclidean' ou 'cosine'.")
 
-# Appliquer la fonction pour calculer la similarité
-df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="euclidean"), axis=1)
+    # Appliquer la fonction pour calculer la similarité
+    df_main['similarity'] = df_main.apply(lambda row: compute_similarity(row, output_prompt, metric="euclidean"), axis=1)
 
-# Trier par similarité croissante et sélectionner les 5 musiques les plus proches
-df_sorted = df_main.sort_values(by='similarity').head(k)
+    # Trier par similarité croissante et sélectionner les 5 musiques les plus proches
+    df_sorted = df_main.sort_values(by='similarity', ascending=False).head(k)
 
-for i in range(k):
-    for seed in df_sorted.head(k)['seeds'].values[i]:
-        dict[seed] = 1 + dict.get(seed, 0)
+    for i in range(k):
+        for seed in df_sorted.head(k)['seeds'].values[i]:
+            dict[seed] = 1 + dict.get(seed, 0)
 
-# Afficher les résultats
-print(df_sorted[['artist', 'song', 'similarity']])
-print(dict)
+    df_sorted = df_sorted.dropna(subset=['spotify_id'])
+
+    # Afficher les résultats
+    # print(df_sorted[['artist', 'similarity', 'spotify_id', 'track']])
+    # print("ID Spotify du premier trouvé :", df_sorted.iloc[0]['spotify_id'])
+    link = 'https://open.spotify.com/intl-fr/track/' + str(df_sorted.iloc[0]['spotify_id'])
+    # print(link)
+    # print(dict)
+    return link
+
+link = vad_to_music('vad_data.json')
+print(link)
