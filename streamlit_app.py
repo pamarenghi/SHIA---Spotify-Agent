@@ -137,7 +137,9 @@ if st.session_state.vad_data:
         with open("vad_data.json", "w") as f:
             json.dump(vad_dict, f, indent=4)
         st.markdown("JSON successfuly optained!")
-        st.write(vad_dict)
+        link = vad_to_music('vad_data.json')
+        st.markdown("Music successfully found!")
+        st.write(link)
 
     except json.JSONDecodeError as e:
         st.error("Error with JSON conversion : " + str(e))
