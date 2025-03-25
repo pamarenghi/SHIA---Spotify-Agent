@@ -15,25 +15,6 @@ st.title("Musicothérapie for SHIA 🎵🧠")
 # Introduction
 st.write("Bienvenue dans cette étude de musicothérapie. Discutez avec une IA spécialisée pour analyser votre état émotionnel à travers la musique.")
 
-# Curseur dans la barre latérale pour contrôler la température
-temperature = st.sidebar.slider(
-    label="Température (contrôle de la créativité)",
-    min_value=0.0,
-    max_value=2.0,
-    value=1.0,
-    step=0.05,
-    help="Plus la température est élevée, plus la réponse sera créative et variée."
-)
-
-# Curseur pour top p
-top_p = st.sidebar.slider(
-    label="Top-p (nucleus sampling)",
-    min_value=0.0,
-    max_value=1.0,
-    value=1.0,
-    step=0.05,
-    help="Plus top-p est bas, plus la sortie sera conservatrice (exclut les tokens peu probables)."
-)
 
 # Initialiser l'historique de la conversation dans la session
 if "messages" not in st.session_state:
@@ -50,6 +31,8 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+# Choix du nombre de questions
+nb_question = int(input("Combien de questions veux-tu (1, 4, 7) ? "))
 
 if len (st.session_state.messages) == 0:
 
@@ -60,7 +43,7 @@ if len (st.session_state.messages) == 0:
         "content": [
             {
             "type": "input_text",
-            "text": "You are a qualified psychologist specializing in music therapy.  I want you to ask me three questions (not scored) regarding my mood to determine my VAD values (Valence, Arousal and dominance). Don't ask them in one prompt but three to make it so that you can tune the questions to be more precise. The questions SHOULD NOT ASK FOR A SCORE FROM THE USER. It should be a smooth approach (don't enumerate the questions) and work like a funnel to grasp any emotion. Each score should be between 0 and ten. The distributions of our data can be considered normal for the three dimensions and centered around 6.5 for valence, 4 for arousal and 6 for dominance. Give the three values with one decimal place. After my third answer, please give me the scores in a json format as follow output_prompt = {    'valence': 2.1,   'arousal': 4.4,  'dominance': 6.8}, without any other text (don't say things such as here is the json). Remember, ask no more than three question and then only return the JSON. Start right away with the first question after saying hi."
+            "text": f"You are a qualified psychologist specializing in music therapy.  I want you to ask me {nb_question} questions (not scored) regarding my mood to determine my VAD values (Valence, Arousal and dominance). Don't ask them in one prompt but {nb_question} to make it so that you can tune the questions to be more precise. The questions SHOULD NOT ASK FOR A SCORE FROM THE USER. It should be a smooth approach (don't enumerate the questions) and work like a funnel to grasp any emotion. Each score should be between 0 and ten. The distributions of our data can be considered normal for the three dimensions and centered around 6.5 for valence, 4 for arousal and 6 for dominance. Give the three values with one decimal place. After my answer {nb_question}, please give me the scores in a json format as follow output_prompt = {    'valence': 2.1,   'arousal': 4.4,  'dominance': 6.8}, without any other text (don't say things such as here is the json). Remember, ask no more than {nb_question} question and then only return the JSON. Start right away with the first question after saying hi."
             }
         ]
         }
@@ -77,9 +60,9 @@ if len (st.session_state.messages) == 0:
         },
         reasoning={},
         tools=[],
-        temperature=temperature,
+        temperature=1,
         max_output_tokens=615,
-        top_p=top_p,
+        top_p=1,
         store=True
     )
 
