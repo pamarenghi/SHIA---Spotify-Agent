@@ -24,6 +24,9 @@ if "messages" not in st.session_state:
 if "vad_data" not in st.session_state:
     st.session_state.vad_data = {}
 
+# Nombre de questions
+if "nb_question" not in st.session_state:
+    st.session_state.nb_question = 0
 
 # Affichage des messages précédents
 for message in st.session_state.messages:
@@ -33,8 +36,9 @@ for message in st.session_state.messages:
 
 # Choix du nombre de questions
 nb_question = int(input("Combien de questions veux-tu (1, 4, 7) ? "))
+st.session_state.nb_question = nb_question
 
-if len (st.session_state.messages) == 0:
+if len (st.session_state.messages) == 0 and nb_question in [1, 4, 7]:
 
     # Preprompt
     pre_prompt = [
