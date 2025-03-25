@@ -15,6 +15,16 @@ st.title("Musicothérapie for SHIA 🎵🧠")
 # Introduction
 st.write("Bienvenue dans cette étude de musicothérapie. Discutez avec une IA spécialisée pour analyser votre état émotionnel à travers la musique.")
 
+# Curseur dans la barre latérale pour contrôler la température
+temperature = st.sidebar.slider(
+    label="Température (contrôle de la créativité)",
+    min_value=0.0,
+    max_value=2.0,
+    value=1.0,
+    step=0.05,
+    help="Plus la température est élevée, plus la réponse sera créative et variée."
+)
+
 # Initialiser l'historique de la conversation dans la session
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -57,7 +67,7 @@ if len (st.session_state.messages) == 0:
         },
         reasoning={},
         tools=[],
-        temperature=1,
+        temperature=temperature,
         max_output_tokens=615,
         top_p=1,
         store=True
