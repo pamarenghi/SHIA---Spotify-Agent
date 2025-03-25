@@ -2,6 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import re
 import json
+from vad_to_music import vad_to_music
 
 # Configuration de l'API OpenAI (remplace "your_api_key_here" par ta clé)
 OPENAI_API_KEY = "key"
