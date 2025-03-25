@@ -37,8 +37,8 @@ for message in st.session_state.messages:
 # Choix du nombre de questions
 st.session_state.nb_question = st.selectbox(
     "Combien de questions veux-tu ?",
-    options=[1, 4, 7],
-    index=0  # Par défaut : 1
+    options=["Sélectionner...",1, 4, 7],
+    index= 0
 )
 
 if len (st.session_state.messages) == 0 and st.session_state.nb_question in [1, 4, 7]:
