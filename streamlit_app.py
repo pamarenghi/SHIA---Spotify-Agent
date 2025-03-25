@@ -35,10 +35,13 @@ for message in st.session_state.messages:
             st.markdown(message["content"])
 
 # Choix du nombre de questions
-nb_question = int(input("Combien de questions veux-tu (1, 4, 7) ? "))
-st.session_state.nb_question = nb_question
+st.session_state.nb_question = st.selectbox(
+    "Combien de questions veux-tu ?",
+    options=[1, 4, 7],
+    index=0  # Par défaut : 1
+)
 
-if len (st.session_state.messages) == 0 and nb_question in [1, 4, 7]:
+if len (st.session_state.messages) == 0 and st.session_state.nb_question in [1, 4, 7]:
 
     # Preprompt
     pre_prompt = [
@@ -47,7 +50,7 @@ if len (st.session_state.messages) == 0 and nb_question in [1, 4, 7]:
         "content": [
             {
             "type": "input_text",
-            "text": f"You are a qualified psychologist specializing in music therapy.  I want you to ask me {nb_question} questions (not scored) regarding my mood to determine my VAD values (Valence, Arousal and dominance). Don't ask them in one prompt but {nb_question} to make it so that you can tune the questions to be more precise. The questions SHOULD NOT ASK FOR A SCORE FROM THE USER. It should be a smooth approach (don't enumerate the questions) and work like a funnel to grasp any emotion. Each score should be between 0 and ten. The distributions of our data can be considered normal for the three dimensions and centered around 6.5 for valence, 4 for arousal and 6 for dominance. Give the three values with one decimal place. After my answer {nb_question}, please give me the scores in a json format as follow output_prompt = {    'valence': 2.1,   'arousal': 4.4,  'dominance': 6.8}, without any other text (don't say things such as here is the json). Remember, ask no more than {nb_question} question and then only return the JSON. Start right away with the first question after saying hi."
+            "text": f"You are a qualified psychologist specializing in music therapy.  I want you to ask me {st.session_state.nb_question} questions (not scored) regarding my mood to determine my VAD values (Valence, Arousal and dominance). Don't ask them in one prompt but {st.session_state.nb_question} to make it so that you can tune the questions to be more precise. The questions SHOULD NOT ASK FOR A SCORE FROM THE USER. It should be a smooth approach (don't enumerate the questions) and work like a funnel to grasp any emotion. Each score should be between 0 and ten. The distributions of our data can be considered normal for the three dimensions and centered around 6.5 for valence, 4 for arousal and 6 for dominance. Give the three values with one decimal place. After my answer {st.session_state.nb_question}, please give me the scores in a json format as follow output_prompt = {    'valence': 2.1,   'arousal': 4.4,  'dominance': 6.8}, without any other text (don't say things such as here is the json). Remember, ask no more than {st.session_state.nb_question} question and then only return the JSON. Start right away with the first question after saying hi."
             }
         ]
         }
