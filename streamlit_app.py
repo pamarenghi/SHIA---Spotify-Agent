@@ -4,7 +4,7 @@ import re
 import json
 
 # Configuration de l'API OpenAI (remplace "your_api_key_here" par ta clé)
-OPENAI_API_KEY = "key"
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 
